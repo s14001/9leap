@@ -2,7 +2,40 @@ enchant();
 
 var enemies = [];
 var player, tension;
+var gs={
+    fps:24
+};
+var Time=Class.create(Label,{
+    initialize:function(){
+       Label.call(this);
+       this.text="TIME:";
+       this.width=game.width;
+       this.height=20;
+       this.x=this.width/2
+       this.color="white";
+      // this.sec=this.age/game.fps;
+       this.timex=0;
+       console.log();
+       game.rootScene.addChild(this);
+     },
+      countUp:function(){
+       if(game.frame % game.fps===0){
+         this.timex++;
 
+       }
+      },
+      display:function(){
+        this.text="TIME:"+(this.timex);
+      },
+      update:function() {
+        this.countUp();
+        this.display();
+      },
+      onenterframe:function(){
+        this.update();
+
+      }
+});
 //自機のクラス
 var Player = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y){
@@ -17,7 +50,7 @@ var Player = enchant.Class.create(enchant.Sprite, {
             if(game.frame % 3 == 0){     //3フレームに一回、自動的に撃つ
                      var shot = tension.value * 4;
                      for(var i = 0;i <= shot;i++){
-                         var s = new PlayerShoot(this.x, this.y + i * 8 - shot * 4, i * 7 - shot * 3);
+                         var s = new PlayerShoot(this.x, this.y + i * 7 - shot * 3, i * 6 - shot * 2);
                      }
             }
         });
@@ -41,7 +74,6 @@ var Enemy = enchant.Class.create(enchant.Sprite, {
             this.direction += this.omega;
             this.x -= this.moveSpeed * Math.cos(this.direction);
             this.y += this.moveSpeed * Math.sin(this.direction);
-
                //画面外に出たら消える
             if(this.y > 240 - this.height || this.x > 320 || this.x < -this.width || this.y < -this.height){
                 this.remove();
@@ -142,12 +174,15 @@ var TensionBar = enchant.Class.create(Entity, {
         }else{
             this.backgroundColor = 'rgb(0, 200, 0)';
         }
+    console.log(game.frame);
     }
 });
 
 window.onload = function() {
-     //初期設定
-    game = new Game(320, 320);
+    //初期設定
+//  new Core();
+     game =new Game(320,320);
+    //  new Game(320, 320);
     game.fps = 24; game.score = 0; game.touched = false; game.preload('chara.png');
     game.onload = function() {
         tension = new TensionBar();
@@ -187,6 +222,8 @@ window.onload = function() {
             }
             scoreLabel.score = game.score;
         });
+
+        new Time();
         scoreLabel = new ScoreLabel(2, 2);
         game.rootScene.addChild(scoreLabel);
     }
